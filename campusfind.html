@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusFind — Smart Campus Lost & Found</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0a0a12;--surface:#12121e;--card:#1a1a2e;--border:rgba(255,255,255,0.08);--text:#f0eeff;--muted:#8a87a8;--accent1:#7c4dff;--accent2:#ff4d8d;--accent3:#00e5ff;--accent4:#ffb347;--grad1:linear-gradient(135deg,#7c4dff,#ff4d8d);--grad2:linear-gradient(135deg,#00e5ff,#7c4dff);--grad3:linear-gradient(135deg,#ff4d8d,#ffb347);}
+  *{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;}
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.2rem 6%;background:rgba(10,10,18,0.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+  .logo{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;background:var(--grad1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .nav-links{display:flex;gap:1.5rem;list-style:none;}
+  .nav-links a{color:var(--muted);text-decoration:none;font-size:0.88rem;font-weight:500;transition:color 0.2s;}
+  .nav-links a:hover{color:var(--text);}
+  .nav-cta{background:var(--grad1);color:#fff !important;padding:0.45rem 1.1rem;border-radius:50px;font-weight:600 !important;}
+  .hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:7rem 6% 4rem;overflow:hidden;}
+  .hero-glow{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;}
+  .glow1{width:500px;height:500px;background:rgba(124,77,255,0.22);top:-100px;left:-100px;}
+  .glow2{width:400px;height:400px;background:rgba(255,77,141,0.18);bottom:-50px;right:-50px;}
+  .glow3{width:300px;height:300px;background:rgba(0,229,255,0.12);top:40%;left:50%;transform:translateX(-50%);}
+  .hero-badge{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(124,77,255,0.15);border:1px solid rgba(124,77,255,0.35);color:#c4b0ff;font-size:0.78rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;padding:0.4rem 1rem;border-radius:50px;margin-bottom:1.5rem;animation:fadeUp 0.8s ease both;}
+  .hero h1{font-family:'Syne',sans-serif;font-size:clamp(2.8rem,6vw,5.5rem);font-weight:800;line-height:1.05;letter-spacing:-0.02em;animation:fadeUp 0.9s 0.1s ease both;}
+  .grad-text{background:var(--grad1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .hero-sub{max-width:560px;margin:1.5rem auto 2.5rem;font-size:1.1rem;color:var(--muted);line-height:1.7;font-weight:300;animation:fadeUp 1s 0.2s ease both;}
+  .hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;animation:fadeUp 1s 0.3s ease both;}
+  .btn-primary{background:var(--grad1);color:#fff;padding:0.85rem 2rem;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:600;text-decoration:none;border:none;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 0 30px rgba(124,77,255,0.35);display:inline-block;}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 45px rgba(124,77,255,0.5);}
+  .btn-outline{background:transparent;color:var(--text);padding:0.85rem 2rem;border-radius:50px;border:1px solid var(--border);font-size:1rem;font-weight:500;text-decoration:none;cursor:pointer;transition:border-color 0.2s,background 0.2s;display:inline-block;}
+  .btn-outline:hover{border-color:rgba(255,255,255,0.25);background:rgba(255,255,255,0.04);}
+  .hero-mockup{position:relative;margin-top:4rem;animation:fadeUp 1s 0.5s ease both;}
+  .mock-window{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;max-width:780px;margin:0 auto;box-shadow:0 40px 80px rgba(0,0,0,0.5);}
+  .mock-bar{background:var(--surface);padding:0.8rem 1rem;display:flex;align-items:center;gap:0.5rem;border-bottom:1px solid var(--border);}
+  .dot{width:10px;height:10px;border-radius:50%;}
+  .d-red{background:#ff5f57;}.d-yellow{background:#febc2e;}.d-green{background:#28c840;}
+  .mock-url{flex:1;text-align:center;font-size:0.75rem;color:var(--muted);}
+  .mock-body{padding:2rem;display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;}
+  .item-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem;text-align:left;transition:transform 0.2s;}
+  .item-card:hover{transform:translateY(-3px);}
+  .item-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:0.7rem;}
+  .ic-purple{background:rgba(124,77,255,0.2);}.ic-pink{background:rgba(255,77,141,0.2);}.ic-cyan{background:rgba(0,229,255,0.15);}
+  .item-card h4{font-size:0.85rem;font-weight:600;margin-bottom:0.25rem;}
+  .item-card p{font-size:0.72rem;color:var(--muted);line-height:1.5;}
+  .tag{display:inline-block;font-size:0.65rem;padding:0.2rem 0.5rem;border-radius:50px;margin-top:0.5rem;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;}
+  .tag-lost{background:rgba(255,77,141,0.2);color:#ff4d8d;}
+  .tag-found{background:rgba(0,229,255,0.15);color:#00e5ff;}
+  .tag-claimed{background:rgba(124,77,255,0.2);color:#a374ff;}
+  .stats-band{padding:4rem 6%;display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+  .stat-item{text-align:center;}
+  .stat-num{font-family:'Syne',sans-serif;font-size:2.8rem;font-weight:800;background:var(--grad1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .stat-label{font-size:0.85rem;color:var(--muted);margin-top:0.3rem;}
+  section{position:relative;z-index:1;}
+  .section-label{font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;font-weight:600;color:var(--accent1);margin-bottom:0.75rem;}
+  .section-title{font-family:'Syne',sans-serif;font-size:clamp(1.9rem,4vw,3rem);font-weight:700;letter-spacing:-0.02em;line-height:1.15;margin-bottom:1rem;}
+  .section-sub{font-size:1.05rem;color:var(--muted);line-height:1.7;font-weight:300;max-width:520px;}
+  /* GALLERY */
+  .lost-gallery{padding:6rem 6%;}
+  .gallery-header{text-align:center;margin-bottom:2.5rem;}
+  .gallery-header .section-sub{margin:0 auto;}
+  .search-bar{display:flex;gap:0.75rem;max-width:500px;margin:0 auto 1.5rem;}
+  .search-input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:0.75rem 1rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;transition:border-color 0.2s;}
+  .search-input::placeholder{color:var(--muted);}
+  .search-input:focus{border-color:var(--accent1);}
+  .search-btn{background:var(--grad1);color:#fff;border:none;border-radius:12px;padding:0.75rem 1.5rem;font-size:0.9rem;font-weight:600;cursor:pointer;transition:opacity 0.2s;}
+  .search-btn:hover{opacity:0.85;}
+  .filter-tabs{display:flex;gap:0.6rem;justify-content:center;flex-wrap:wrap;margin-bottom:2.5rem;}
+  .filter-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:0.42rem 1rem;border-radius:50px;font-size:0.8rem;font-weight:500;cursor:pointer;transition:all 0.2s;}
+  .filter-btn:hover{border-color:var(--accent1);color:var(--text);}
+  .filter-btn.active{background:var(--accent1);border-color:var(--accent1);color:#fff;}
+  .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;}
+  .gallery-card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:transform 0.25s,border-color 0.25s,box-shadow 0.25s;cursor:pointer;}
+  .gallery-card:hover{transform:translateY(-6px);border-color:rgba(124,77,255,0.35);box-shadow:0 20px 40px rgba(0,0,0,0.3);}
+  .gallery-img{width:100%;height:200px;object-fit:cover;background:var(--surface);display:block;}
+  .gallery-img-placeholder{width:100%;height:200px;background:linear-gradient(135deg,rgba(124,77,255,0.15),rgba(255,77,141,0.1));display:flex;align-items:center;justify-content:center;font-size:3.5rem;}
+  .gallery-body{padding:1.25rem;}
+  .gallery-body-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:0.5rem;gap:0.5rem;}
+  .gallery-card h3{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;}
+  .gallery-card p{font-size:0.82rem;color:var(--muted);line-height:1.55;margin-bottom:0.75rem;}
+  .gallery-meta{display:flex;flex-direction:column;gap:0.3rem;}
+  .gallery-meta-row{display:flex;align-items:flex-start;gap:0.5rem;font-size:0.75rem;color:var(--muted);}
+  .gallery-footer{display:flex;justify-content:space-between;align-items:center;margin-top:1rem;padding-top:0.75rem;border-top:1px solid var(--border);}
+  .gallery-contact{font-size:0.7rem;color:var(--accent3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;}
+  .gallery-reward{font-size:0.68rem;background:rgba(255,179,71,0.15);color:var(--accent4);padding:0.2rem 0.55rem;border-radius:50px;font-weight:600;white-space:nowrap;}
+  /* FOUND */
+  .found-section{padding:6rem 6%;background:var(--surface);border-top:1px solid var(--border);}
+  .found-header{text-align:center;margin-bottom:2.5rem;}
+  /* STUDENTS */
+  .students-section{padding:6rem 6%;}
+  .students-header{text-align:center;margin-bottom:2.5rem;}
+  .students-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem;}
+  .student-id-card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:transform 0.25s,border-color 0.25s;}
+  .student-id-card:hover{transform:translateY(-4px);border-color:rgba(124,77,255,0.35);}
+  .id-card-header{padding:1.25rem 1.25rem 1rem;display:flex;align-items:center;gap:1rem;}
+  .id-avatar{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:#fff;flex-shrink:0;}
+  .id-card-header h3{font-size:1rem;font-weight:600;margin-bottom:0.2rem;}
+  .id-roll{font-size:0.75rem;color:var(--accent1);font-weight:600;}
+  .id-card-body{padding:0 1.25rem 1.25rem;display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;}
+  .id-field{background:var(--surface);border-radius:8px;padding:0.6rem 0.75rem;}
+  .id-field-label{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.2rem;}
+  .id-field-value{font-size:0.82rem;font-weight:500;}
+  .id-card-footer{padding:0.75rem 1.25rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+  .id-dept{font-size:0.72rem;color:var(--muted);}
+  .id-year{font-size:0.72rem;background:rgba(124,77,255,0.15);color:#c4b0ff;padding:0.2rem 0.6rem;border-radius:50px;font-weight:600;}
+  /* FEATURES */
+  .features{padding:6rem 6%;background:var(--surface);border-top:1px solid var(--border);}
+  .features-header{text-align:center;margin-bottom:3.5rem;}
+  .features-header .section-sub{margin:0 auto;}
+  .features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
+  .feat-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;transition:transform 0.25s,border-color 0.25s;}
+  .feat-card:hover{transform:translateY(-5px);border-color:rgba(255,255,255,0.14);}
+  .feat-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:1.25rem;}
+  .feat-card h3{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:0.6rem;}
+  .feat-card p{font-size:0.9rem;color:var(--muted);line-height:1.65;}
+  /* TEAM */
+  .team{padding:6rem 6%;}
+  .team-header{text-align:center;margin-bottom:3.5rem;}
+  .team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:800px;margin:0 auto;}
+  .member-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem 1.5rem;text-align:center;transition:transform 0.25s,border-color 0.25s;}
+  .member-card:hover{transform:translateY(-5px);border-color:rgba(124,77,255,0.3);}
+  .member-avatar{width:60px;height:60px;border-radius:50%;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700;color:#fff;}
+  .member-card h3{font-size:1rem;font-weight:600;margin-bottom:0.25rem;}
+  .member-id{font-size:0.75rem;color:var(--muted);}
+  /* MODAL */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:200;align-items:center;justify-content:center;padding:2rem;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:var(--card);border:1px solid var(--border);border-radius:20px;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;}
+  .modal-img{width:100%;height:260px;object-fit:cover;border-radius:16px 16px 0 0;display:block;}
+  .modal-body{padding:1.75rem;}
+  .modal-body h2{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700;margin-bottom:1rem;}
+  .modal-row{display:flex;gap:0.5rem;align-items:flex-start;margin-bottom:0.65rem;font-size:0.87rem;}
+  .modal-label{color:var(--muted);min-width:110px;flex-shrink:0;}
+  .modal-value{color:var(--text);line-height:1.5;}
+  .modal-close-btn{background:rgba(255,255,255,0.08);border:1px solid var(--border);color:var(--text);padding:0.5rem 1.2rem;border-radius:50px;font-size:0.85rem;cursor:pointer;margin-bottom:1rem;transition:background 0.2s;}
+  .modal-close-btn:hover{background:rgba(255,255,255,0.14);}
+  /* CTA */
+  .cta-banner{margin:4rem 6%;background:linear-gradient(135deg,rgba(124,77,255,0.15),rgba(255,77,141,0.12));border:1px solid rgba(124,77,255,0.25);border-radius:24px;padding:4rem 3rem;text-align:center;}
+  .cta-banner h2{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;margin-bottom:0.75rem;}
+  .cta-banner p{color:var(--muted);margin-bottom:2rem;}
+  footer{padding:3rem 6%;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+  .footer-logo{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;background:var(--grad1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .footer-info{font-size:0.82rem;color:var(--muted);text-align:center;line-height:1.6;}
+  .footer-dept{font-size:0.78rem;color:var(--muted);text-align:right;line-height:1.6;}
+  .loading-spinner{text-align:center;padding:3rem;color:var(--muted);font-size:0.9rem;grid-column:1/-1;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+  .reveal{opacity:0;transform:translateY(30px);transition:opacity 0.7s ease,transform 0.7s ease;}
+  .reveal.visible{opacity:1;transform:translateY(0);}
+  @media(max-width:900px){.features-grid{grid-template-columns:repeat(2,1fr);}.team-grid{grid-template-columns:repeat(2,1fr);}.stats-band{grid-template-columns:repeat(2,1fr);}.mock-body{grid-template-columns:1fr;}nav .nav-links{display:none;}}
+  @media(max-width:600px){.features-grid{grid-template-columns:1fr;}.team-grid{grid-template-columns:1fr;}footer{flex-direction:column;gap:1rem;text-align:center;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">CampusFind</div>
+  <ul class="nav-links">
+    <li><a href="#lost-gallery">Lost Items</a></li>
+    <li><a href="#found-section">Found Items</a></li>
+    <li><a href="#students">Student IDs</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#team">Team</a></li>
+    <li><a href="#contact" class="nav-cta">Report Item</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-glow glow1"></div>
+  <div class="hero-glow glow2"></div>
+  <div class="hero-glow glow3"></div>
+  <div style="position:relative;z-index:1;width:100%;">
+    <div class="hero-badge">🎓 DPGU — Academic Year 2025–2026</div>
+    <h1>Smart Campus<br><span class="grad-text">Lost & Found</span><br>Application</h1>
+    <p class="hero-sub">A centralized digital platform designed to help students and staff report, search, and recover lost belongings on campus — faster, smarter, and effortlessly.</p>
+    <div class="hero-btns">
+      <a href="#lost-gallery" class="btn-primary">Browse Lost Items</a>
+      <a href="#found-section" class="btn-outline">Found Items →</a>
+    </div>
+    <div class="hero-mockup">
+      <div class="mock-window">
+        <div class="mock-bar">
+          <div class="dot d-red"></div><div class="dot d-yellow"></div><div class="dot d-green"></div>
+          <div class="mock-url">campusfind.dpgu.edu.in — Live Dashboard</div>
+        </div>
+        <div class="mock-body">
+          <div class="item-card"><div class="item-icon ic-pink">🎒</div><h4>Blue Backpack</h4><p>Lost near Library Block B, 2nd floor.</p><span class="tag tag-lost">Lost</span></div>
+          <div class="item-card"><div class="item-icon ic-cyan">🎧</div><h4>Sony Earphones</h4><p>Found at Cafeteria table 7.</p><span class="tag tag-found">Found</span></div>
+          <div class="item-card"><div class="item-icon ic-purple">🪪</div><h4>Student ID Card</h4><p>ID 25FC756 found near Main Gate.</p><span class="tag tag-claimed">Claimed ✓</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="stats-band reveal">
+  <div class="stat-item"><div class="stat-num">10</div><div class="stat-label">Active Lost Reports</div></div>
+  <div class="stat-item"><div class="stat-num">10</div><div class="stat-label">Found Items Available</div></div>
+  <div class="stat-item"><div class="stat-num">10</div><div class="stat-label">Registered Students</div></div>
+  <div class="stat-item"><div class="stat-num">85%</div><div class="stat-label">Recovery Rate</div></div>
+</div>
+
+<!-- ═══════════════════ LOST ITEMS GALLERY ═══════════════════ -->
+<section class="lost-gallery" id="lost-gallery">
+  <div class="gallery-header reveal">
+    <div class="section-label">Lost Items</div>
+    <h2 class="section-title">Items Reported Missing</h2>
+    <p class="section-sub">Browse all items currently reported as lost. Click any card for full details and to contact the owner.</p>
+  </div>
+  <div class="search-bar">
+    <input type="text" class="search-input" id="lost-search" placeholder="Search by name, category, location...">
+    <button class="search-btn" onclick="filterLostItems()">Search</button>
+  </div>
+  <div class="filter-tabs">
+    <button class="filter-btn active" onclick="setFilter('All',this)">All</button>
+    <button class="filter-btn" onclick="setFilter('Electronics',this)">Electronics</button>
+    <button class="filter-btn" onclick="setFilter('Bag',this)">Bag</button>
+    <button class="filter-btn" onclick="setFilter('Wallet',this)">Wallet</button>
+    <button class="filter-btn" onclick="setFilter('ID / Card',this)">ID / Card</button>
+    <button class="filter-btn" onclick="setFilter('Accessories',this)">Accessories</button>
+    <button class="filter-btn" onclick="setFilter('Stationery',this)">Stationery</button>
+    <button class="filter-btn" onclick="setFilter('Academics',this)">Academics</button>
+  </div>
+  <div class="gallery-grid" id="lost-grid"><div class="loading-spinner">⏳ Loading lost items...</div></div>
+</section>
+
+<!-- ═══════════════════ FOUND ITEMS ═══════════════════ -->
+<section class="found-section" id="found-section">
+  <div class="found-header reveal">
+    <div class="section-label">Found Items</div>
+    <h2 class="section-title">Items Waiting to be Claimed</h2>
+    <p class="section-sub" style="margin:0 auto;">Found by fellow students. If one is yours, contact the finder or visit the admin.</p>
+  </div>
+  <div style="height:2rem;"></div>
+  <div class="gallery-grid" id="found-grid"><div class="loading-spinner">⏳ Loading found items...</div></div>
+</section>
+
+<!-- ═══════════════════ STUDENT IDs ═══════════════════ -->
+<section class="students-section" id="students">
+  <div class="students-header reveal">
+    <div class="section-label">Student Directory</div>
+    <h2 class="section-title">Registered Student IDs</h2>
+    <p class="section-sub" style="margin:0 auto;">All students registered in CampusFind. Used to verify ownership and process claims.</p>
+  </div>
+  <div style="height:2rem;"></div>
+  <div class="students-grid" id="students-grid"><div class="loading-spinner">⏳ Loading student records...</div></div>
+</section>
+
+<!-- ═══════════════════ FEATURES ═══════════════════ -->
+<section class="features" id="features">
+  <div class="features-header reveal">
+    <div class="section-label">Core Features</div>
+    <h2 class="section-title">Everything You Need</h2>
+    <p class="section-sub">Six powerful modules working in harmony for a seamless experience.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feat-card reveal"><div class="feat-icon" style="background:rgba(124,77,255,0.15);">📷</div><h3>Image Upload & Description</h3><p>Report items with photos, description, location, and date for accurate identification.</p></div>
+    <div class="feat-card reveal" style="transition-delay:0.08s;"><div class="feat-icon" style="background:rgba(255,77,141,0.15);">🔔</div><h3>Smart Notifications</h3><p>Instant alerts when a potential match is found for your reported lost item.</p></div>
+    <div class="feat-card reveal" style="transition-delay:0.16s;"><div class="feat-icon" style="background:rgba(0,229,255,0.12);">🔍</div><h3>Search & Match System</h3><p>Browse the centralized database. Search by item name, description, or category.</p></div>
+    <div class="feat-card reveal" style="transition-delay:0.24s;"><div class="feat-icon" style="background:rgba(255,179,71,0.12);">🛡️</div><h3>Admin Verification</h3><p>All claims reviewed by admin to ensure items reach their rightful owners.</p></div>
+    <div class="feat-card reveal" style="transition-delay:0.32s;"><div class="feat-icon" style="background:rgba(124,77,255,0.15);">💬</div><h3>In-App Messaging</h3><p>Connect directly with the finder or owner via built-in chat.</p></div>
+    <div class="feat-card reveal" style="transition-delay:0.4s;"><div class="feat-icon" style="background:rgba(255,77,141,0.15);">📊</div><h3>Data Tracking Dashboard</h3><p>Track total lost/found items, status updates, and resolution rates.</p></div>
+  </div>
+</section>
+
+<!-- ═══════════════════ TEAM ═══════════════════ -->
+<section class="team" id="team">
+  <div class="team-header reveal">
+    <div class="section-label">Meet the Team</div>
+    <h2 class="section-title">The Builders</h2>
+    <p class="section-sub" style="margin:0 auto;">Six CSE students from DPGU guided by Dr. Mithra Venkatesan.</p>
+  </div>
+  <div class="team-grid">
+    <div class="member-card reveal"><div class="member-avatar" style="background:linear-gradient(135deg,#7c4dff,#ff4d8d);">VL</div><h3>Vaishnavi Latare</h3><div class="member-id">25FC746</div></div>
+    <div class="member-card reveal" style="transition-delay:0.08s;"><div class="member-avatar" style="background:linear-gradient(135deg,#ff4d8d,#ffb347);">MJ</div><h3>Mayur Jadhav</h3><div class="member-id">25FC7__</div></div>
+    <div class="member-card reveal" style="transition-delay:0.16s;"><div class="member-avatar" style="background:linear-gradient(135deg,#00e5ff,#7c4dff);">AC</div><h3>Adarsh Chawrasia</h3><div class="member-id">25FC757</div></div>
+    <div class="member-card reveal" style="transition-delay:0.24s;"><div class="member-avatar" style="background:linear-gradient(135deg,#ffb347,#ff4d8d);">SD</div><h3>Soham Dere</h3><div class="member-id">25FC7__</div></div>
+    <div class="member-card reveal" style="transition-delay:0.32s;"><div class="member-avatar" style="background:linear-gradient(135deg,#7c4dff,#00e5ff);">YK</div><h3>Yashraj Kathale</h3><div class="member-id">25FC748</div></div>
+    <div class="member-card reveal" style="transition-delay:0.4s;"><div class="member-avatar" style="background:linear-gradient(135deg,#ff4d8d,#7c4dff);">KC</div><h3>Krishna Chakur</h3><div class="member-id">25FC756</div></div>
+  </div>
+  <div style="text-align:center;margin-top:3rem;" class="reveal">
+    <div style="display:inline-flex;align-items:center;gap:1rem;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.25rem 2rem;">
+      <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#7c4dff,#00e5ff);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;color:#fff;">MV</div>
+      <div style="text-align:left;"><div style="font-weight:600;font-size:0.95rem;">Dr. Mithra Venkatesan</div><div style="font-size:0.8rem;color:var(--muted);">Project Guide & Director (I/C), DPGU STR</div></div>
+    </div>
+  </div>
+</section>
+
+<div id="contact" style="padding:2rem 0 4rem;">
+  <div class="cta-banner reveal">
+    <h2>Lost Something on Campus? 🔍</h2>
+    <p>CampusFind is designed for DPGU students and staff. Report and recover your belongings the smart way.</p>
+    <a href="#lost-gallery" class="btn-primary">Browse All Items</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">CampusFind</div>
+  <div class="footer-info">Project Based Learning — Academic Year 2025–2026<br>School of Technology & Research, DPGU, Pimpri, Pune</div>
+  <div class="footer-dept">Department of Computer<br>Science Engineering</div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="handleModalClick(event)">
+  <div class="modal" id="modal-box">
+    <img class="modal-img" id="modal-img" src="" alt="" style="display:none;">
+    <div class="modal-body">
+      <button class="modal-close-btn" onclick="closeModal()">✕ Close</button>
+      <h2 id="modal-title"></h2>
+      <div id="modal-content"></div>
+      <div style="margin-top:1.5rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
+        <a id="modal-contact-btn" href="#" class="btn-primary" style="font-size:0.85rem;padding:0.65rem 1.5rem;">📧 Contact via Email</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const LOST_PATH  = "data/lost_items.json";
+const FOUND_PATH = "data/found_items.json";
+const STU_PATH   = "data/students.json";
+
+let allLost=[], allFound=[], allStudents=[], activeFilter="All";
+
+const EMOJIS={"Bag":"🎒","Electronics":"🎧","ID / Card":"🪪","Wallet":"👛","Accessories":"🕶️","Stationery":"✏️","Academics":"📁","default":"📦"};
+const emoji=c=>EMOJIS[c]||EMOJIS["default"];
+
+async function loadAll(){
+  try{
+    const[a,b,c]=await Promise.all([fetch(LOST_PATH),fetch(FOUND_PATH),fetch(STU_PATH)]);
+    if(!a.ok||!b.ok||!c.ok)throw new Error("fetch failed");
+    allLost=await a.json();allFound=await b.json();allStudents=await c.json();
+  }catch{
+    allLost=LOST_FB;allFound=FOUND_FB;allStudents=STU_FB;
+  }
+  renderLost(allLost);renderFound(allFound);renderStudents(allStudents);
+}
+
+function cardHTML(item,type){
+  const isLost=type==='lost';
+  const name=isLost?item.student_name:item.finder_name;
+  const id=isLost?item.student_id:item.finder_student_id;
+  const loc=isLost?item.location:item.location_found;
+  const date=isLost?item.date_lost:item.date_found;
+  const statusTag=isLost
+    ?(item.status==='found'?'<span class="tag tag-claimed">Claimed</span>':'<span class="tag tag-lost">Lost</span>')
+    :(item.status==='claimed'?'<span class="tag tag-claimed">Claimed</span>':'<span class="tag tag-found">Found</span>');
+  const extra=isLost
+    ?(item.reward&&item.reward!=='No'?`<span class="gallery-reward">🏆 ${item.reward}</span>`:'')
+    :(item.handed_to_admin?'<span class="gallery-reward">🛡️ With Admin</span>':'');
+  return`<div class="gallery-card reveal" onclick="openModal('${type}','${item.id}')">
+    ${item.image_url
+      ?`<img class="gallery-img" src="${item.image_url}" alt="${item.item_name}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+         <div class="gallery-img-placeholder" style="display:none;">${emoji(item.category)}</div>`
+      :`<div class="gallery-img-placeholder">${emoji(item.category)}</div>`}
+    <div class="gallery-body">
+      <div class="gallery-body-top"><h3>${item.item_name}</h3>${statusTag}</div>
+      <p>${item.description.length>90?item.description.slice(0,90)+'…':item.description}</p>
+      <div class="gallery-meta">
+        <div class="gallery-meta-row"><span>📍</span><span>${loc}</span></div>
+        <div class="gallery-meta-row"><span>📅</span><span>${date}</span></div>
+        <div class="gallery-meta-row"><span>👤</span><span>${name} (${id})</span></div>
+      </div>
+      <div class="gallery-footer"><span class="gallery-contact">${item.contact}</span>${extra}</div>
+    </div>
+  </div>`;
+}
+
+function renderLost(items){
+  const g=document.getElementById('lost-grid');
+  g.innerHTML=items.length?items.map(i=>cardHTML(i,'lost')).join(''):'<div class="loading-spinner">No items match.</div>';
+  observeReveal();
+}
+function renderFound(items){
+  const g=document.getElementById('found-grid');
+  g.innerHTML=items.length?items.map(i=>cardHTML(i,'found')).join(''):'<div class="loading-spinner">No found items.</div>';
+  observeReveal();
+}
+function renderStudents(students){
+  const g=document.getElementById('students-grid');
+  g.innerHTML=students.map(s=>`
+    <div class="student-id-card reveal">
+      <div class="id-card-header">
+        <div class="id-avatar" style="background:${s.color};">${s.profile_initial}</div>
+        <div><h3>${s.name}</h3><div class="id-roll">${s.roll_no}</div></div>
+      </div>
+      <div class="id-card-body">
+        <div class="id-field"><div class="id-field-label">Division</div><div class="id-field-value">Div ${s.division}</div></div>
+        <div class="id-field"><div class="id-field-label">Blood Group</div><div class="id-field-value">${s.blood_group}</div></div>
+        <div class="id-field" style="grid-column:span 2;"><div class="id-field-label">Email</div><div class="id-field-value" style="font-size:0.76rem;">${s.email}</div></div>
+        <div class="id-field" style="grid-column:span 2;"><div class="id-field-label">Hostel</div><div class="id-field-value">${s.hostel}</div></div>
+      </div>
+      <div class="id-card-footer"><span class="id-dept">CSE — DPGU</span><span class="id-year">${s.year}</span></div>
+    </div>`).join('');
+  observeReveal();
+}
+
+function setFilter(cat,btn){
+  activeFilter=cat;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  filterLostItems();
+}
+function filterLostItems(){
+  const q=document.getElementById('lost-search').value.toLowerCase();
+  let f=allLost;
+  if(activeFilter!=='All')f=f.filter(i=>i.category===activeFilter);
+  if(q)f=f.filter(i=>i.item_name.toLowerCase().includes(q)||i.description.toLowerCase().includes(q)||i.location.toLowerCase().includes(q)||i.student_name.toLowerCase().includes(q));
+  renderLost(f);
+}
+document.getElementById('lost-search').addEventListener('keyup',e=>{if(e.key==='Enter')filterLostItems();});
+
+function openModal(type,id){
+  const item=type==='lost'?allLost.find(i=>i.id===id):allFound.find(i=>i.id===id);
+  if(!item)return;
+  const img=document.getElementById('modal-img');
+  if(item.image_url){img.src=item.image_url;img.style.display='block';}else{img.style.display='none';}
+  document.getElementById('modal-title').textContent=item.item_name;
+  const isLost=type==='lost';
+  const rows=isLost?[
+    ['Category',item.category],['Description',item.description],
+    ['Lost At',item.location],['Date Lost',item.date_lost],
+    ['Reported By',`${item.student_name} (${item.student_id})`],
+    ['Status',item.status.toUpperCase()],['Reward',item.reward]
+  ]:[
+    ['Category',item.category],['Description',item.description],
+    ['Found At',item.location_found],['Date Found',item.date_found],
+    ['Found By',`${item.finder_name} (${item.finder_student_id})`],
+    ['Status',item.status.toUpperCase()],['With Admin',item.handed_to_admin?'Yes':'No']
+  ];
+  document.getElementById('modal-content').innerHTML=rows.map(([l,v])=>`<div class="modal-row"><span class="modal-label">${l}</span><span class="modal-value">${v}</span></div>`).join('');
+  document.getElementById('modal-contact-btn').href=`mailto:${item.contact}?subject=CampusFind: ${item.item_name}`;
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal(){document.getElementById('modal').classList.remove('open');}
+function handleModalClick(e){if(e.target.id==='modal')closeModal();}
+
+function observeReveal(){
+  const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});},{threshold:0.1});
+  document.querySelectorAll('.reveal:not(.visible)').forEach(el=>obs.observe(el));
+}
+
+// ── FALLBACK DATA (works without a server) ──────────────────
+const LOST_FB=[{"id":"L001","student_id":"25FC746","student_name":"Vaishnavi Latare","item_name":"Blue Backpack","description":"Dark blue Wildcraft backpack with a small keychain of a red car attached to the zipper. Has a water bottle side pocket.","category":"Bag","location":"Library Block B, 2nd Floor","date_lost":"2025-09-10","contact":"vaishnavi.latare@dpgu.edu.in","status":"searching","image_url":"https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&q=80","reward":"Yes - 200 INR"},{"id":"L002","student_id":"25FC748","student_name":"Yashraj Kathale","item_name":"Sony Earphones (WH-1000XM4)","description":"Black Sony over-ear wireless headphones in a white carry case. Name written inside: YK.","category":"Electronics","location":"Cafeteria, Near Table 7","date_lost":"2025-09-12","contact":"yashraj.kathale@dpgu.edu.in","status":"searching","image_url":"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80","reward":"Yes - 500 INR"},{"id":"L003","student_id":"25FC756","student_name":"Krishna Chakur","item_name":"Student ID Card","description":"DPGU ID card with photo, Roll No. 25FC756. Red lanyard attached.","category":"ID / Card","location":"Main Gate Entrance","date_lost":"2025-09-14","contact":"krishna.chakur@dpgu.edu.in","status":"found","image_url":"https://images.unsplash.com/photo-1618044733300-9472054094ee?w=400&q=80","reward":"No"},{"id":"L004","student_id":"25FC757","student_name":"Adarsh Chawrasia","item_name":"Scientific Calculator (Casio FX-991)","description":"Black Casio FX-991EX scientific calculator. Has a sticker with initials 'AC' on the back.","category":"Stationery","location":"Classroom 302, Block A","date_lost":"2025-09-15","contact":"adarsh.chawrasia@dpgu.edu.in","status":"searching","image_url":"https://images.unsplash.com/photo-1564939558297-fc396f18e5c7?w=400&q=80","reward":"No"},{"id":"L005","student_id":"25FC749","student_name":"Rohit Sharma","item_name":"Black Wallet","description":"Black leather bifold wallet. Contains student ID, 2 debit cards, and around 500 INR cash.","category":"Wallet","location":"Canteen","date_lost":"2025-09-17","contact":"rohit.sharma@dpgu.edu.in","status":"searching","image_url":"https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&q=80","reward":"Yes - 300 INR"},{"id":"L006","student_id":"25FC751","student_name":"Priya Desai","item_name":"Water Bottle (Milton)","description":"Green Milton Thermosteel 1L water bottle. Has a small dent near the bottom. Name: PRIYA.","category":"Accessories","location":"Sports Ground","date_lost":"2025-09-18","contact":"priya.desai@dpgu.edu.in","status":"searching","image_url":"https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400&q=80","reward":"No"},{"id":"L007","student_id":"25FC752","student_name":"Aman Verma","item_name":"USB Drive (SanDisk 64GB)","description":"Red SanDisk Cruzer Blade 64GB pen drive. Contains important project files. Label: AMAN-V.","category":"Electronics","location":"Computer Lab 1","date_lost":"2025-09-19","contact":"aman.verma@dpgu.edu.in","status":"searching","image_url":"https://images.unsplash.com/photo-1618424181497-157f25b6ddd5?w=400&q=80","reward":"Yes - 100 INR"},{"id":"L008","student_id":"25FC753","student_name":"Sneha Patil","item_name":"Engineering Drawing File","description":"A3 size drawing file with semester 3 drawings. Blue cover. Name written on top: SNEHA PATIL.","category":"Academics","location":"Drawing Hall, Block C","date_lost":"2025-09-20","contact":"sneha.patil@dpgu.edu.in","status":"searching","image_url":"https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d?w=400&q=80","reward":"No"},{"id":"L009","student_id":"25FC754","student_name":"Nikhil Joshi","item_name":"Spectacles (Titan Eye+)","description":"Black rectangular frame Titan spectacles with anti-glare lenses in a brown hard case.","category":"Accessories","location":"Reading Room, Library","date_lost":"2025-09-21","contact":"nikhil.joshi@dpgu.edu.in","status":"searching","image_url":"https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=400&q=80","reward":"Yes - 200 INR"},{"id":"L010","student_id":"25FC755","student_name":"Kavya Nair","item_name":"Purple Umbrella","description":"Compact foldable purple umbrella, brand Rainco. Has a golden metal handle.","category":"Accessories","location":"Hostel Common Room","date_lost":"2025-09-22","contact":"kavya.nair@dpgu.edu.in","status":"searching","image_url":"https://images.unsplash.com/photo-1527525443983-6e60c75fff46?w=400&q=80","reward":"No"}];
+const FOUND_FB=[{"id":"F001","finder_student_id":"25FC760","finder_name":"Rahul Mehta","item_name":"Student ID Card","description":"Found a DPGU ID card near the main gate. Belongs to Roll No. 25FC756.","category":"ID / Card","location_found":"Main Gate, Near Security Cabin","date_found":"2025-09-14","contact":"rahul.mehta@dpgu.edu.in","status":"claimed","image_url":"https://images.unsplash.com/photo-1618044733300-9472054094ee?w=400&q=80","handed_to_admin":true},{"id":"F002","finder_student_id":"25FC761","finder_name":"Pooja Kulkarni","item_name":"Black Casio Calculator","description":"Found a Casio FX calculator in Classroom 302. Has sticker 'AC' on the back.","category":"Stationery","location_found":"Classroom 302, Block A","date_found":"2025-09-16","contact":"pooja.kulkarni@dpgu.edu.in","status":"available","image_url":"https://images.unsplash.com/photo-1564939558297-fc396f18e5c7?w=400&q=80","handed_to_admin":false},{"id":"F003","finder_student_id":"25FC762","finder_name":"Aryan Singh","item_name":"Water Bottle","description":"Green insulated bottle found at the sports ground near the cricket pitch.","category":"Accessories","location_found":"Sports Ground, Cricket Pitch Side","date_found":"2025-09-19","contact":"aryan.singh@dpgu.edu.in","status":"available","image_url":"https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400&q=80","handed_to_admin":true},{"id":"F004","finder_student_id":"25FC763","finder_name":"Dipika Sawant","item_name":"Red USB Pendrive","description":"Found a red SanDisk USB drive in Computer Lab 1 on the desk near PC #4.","category":"Electronics","location_found":"Computer Lab 1, PC #4 Desk","date_found":"2025-09-20","contact":"dipika.sawant@dpgu.edu.in","status":"available","image_url":"https://images.unsplash.com/photo-1618424181497-157f25b6ddd5?w=400&q=80","handed_to_admin":false},{"id":"F005","finder_student_id":"25FC764","finder_name":"Vishal Kamble","item_name":"Black Leather Wallet","description":"Found a black wallet near the canteen counter. Contains cards and some cash.","category":"Wallet","location_found":"Canteen, Near Main Counter","date_found":"2025-09-18","contact":"vishal.kamble@dpgu.edu.in","status":"available","image_url":"https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&q=80","handed_to_admin":true},{"id":"F006","finder_student_id":"25FC765","finder_name":"Ankita Rao","item_name":"Drawing File (A3)","description":"Blue cover A3 drawing file found in the Drawing Hall. Has name SNEHA PATIL.","category":"Academics","location_found":"Drawing Hall, Table Row 3","date_found":"2025-09-21","contact":"ankita.rao@dpgu.edu.in","status":"available","image_url":"https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d?w=400&q=80","handed_to_admin":false},{"id":"F007","finder_student_id":"25FC766","finder_name":"Devraj Tiwari","item_name":"Spectacles in Brown Case","description":"Black frame spectacles in a brown hard case. Found on reading room table 12.","category":"Accessories","location_found":"Library Reading Room, Table 12","date_found":"2025-09-22","contact":"devraj.tiwari@dpgu.edu.in","status":"available","image_url":"https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=400&q=80","handed_to_admin":false},{"id":"F008","finder_student_id":"25FC767","finder_name":"Riya Bhosale","item_name":"Purple Foldable Umbrella","description":"Compact purple umbrella with golden handle found in hostel common room.","category":"Accessories","location_found":"Hostel Common Room, TV Area","date_found":"2025-09-23","contact":"riya.bhosale@dpgu.edu.in","status":"available","image_url":"https://images.unsplash.com/photo-1527525443983-6e60c75fff46?w=400&q=80","handed_to_admin":false},{"id":"F009","finder_student_id":"25FC768","finder_name":"Karan Pawar","item_name":"Notebook (Physics)","description":"A4 spiral notebook 'Physics Notes - Sem 3'. Found near the physics lab entrance.","category":"Academics","location_found":"Physics Lab, Block D Entrance","date_found":"2025-09-24","contact":"karan.pawar@dpgu.edu.in","status":"available","image_url":"https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&q=80","handed_to_admin":false},{"id":"F010","finder_student_id":"25FC769","finder_name":"Tanvi Jain","item_name":"Charger (OnePlus)","description":"White OnePlus SUPERVOOC 65W charger found plugged in at the library charging station.","category":"Electronics","location_found":"Library Charging Station, Point 3","date_found":"2025-09-25","contact":"tanvi.jain@dpgu.edu.in","status":"available","image_url":"https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=400&q=80","handed_to_admin":true}];
+const STU_FB=[{"roll_no":"25FC746","name":"Vaishnavi Latare","email":"vaishnavi.latare@dpgu.edu.in","phone":"9876543210","department":"Computer Science Engineering","year":"First Year","division":"A","blood_group":"O+","hostel":"Girls Hostel Block 1","profile_initial":"VL","color":"linear-gradient(135deg,#7c4dff,#ff4d8d)"},{"roll_no":"25FC748","name":"Yashraj Kathale","email":"yashraj.kathale@dpgu.edu.in","phone":"9876543211","department":"Computer Science Engineering","year":"First Year","division":"A","blood_group":"A+","hostel":"Boys Hostel Block 2","profile_initial":"YK","color":"linear-gradient(135deg,#00e5ff,#7c4dff)"},{"roll_no":"25FC756","name":"Krishna Chakur","email":"krishna.chakur@dpgu.edu.in","phone":"9876543212","department":"Computer Science Engineering","year":"First Year","division":"B","blood_group":"B+","hostel":"Boys Hostel Block 1","profile_initial":"KC","color":"linear-gradient(135deg,#ff4d8d,#7c4dff)"},{"roll_no":"25FC757","name":"Adarsh Chawrasia","email":"adarsh.chawrasia@dpgu.edu.in","phone":"9876543213","department":"Computer Science Engineering","year":"First Year","division":"B","blood_group":"AB+","hostel":"Boys Hostel Block 3","profile_initial":"AC","color":"linear-gradient(135deg,#ffb347,#ff4d8d)"},{"roll_no":"25FC749","name":"Rohit Sharma","email":"rohit.sharma@dpgu.edu.in","phone":"9876543214","department":"Computer Science Engineering","year":"First Year","division":"A","blood_group":"O-","hostel":"Boys Hostel Block 2","profile_initial":"RS","color":"linear-gradient(135deg,#7c4dff,#00e5ff)"},{"roll_no":"25FC751","name":"Priya Desai","email":"priya.desai@dpgu.edu.in","phone":"9876543215","department":"Computer Science Engineering","year":"First Year","division":"A","blood_group":"A-","hostel":"Girls Hostel Block 2","profile_initial":"PD","color":"linear-gradient(135deg,#ff4d8d,#ffb347)"},{"roll_no":"25FC752","name":"Aman Verma","email":"aman.verma@dpgu.edu.in","phone":"9876543216","department":"Computer Science Engineering","year":"First Year","division":"B","blood_group":"B-","hostel":"Boys Hostel Block 1","profile_initial":"AV","color":"linear-gradient(135deg,#00e5ff,#ffb347)"},{"roll_no":"25FC753","name":"Sneha Patil","email":"sneha.patil@dpgu.edu.in","phone":"9876543217","department":"Computer Science Engineering","year":"First Year","division":"A","blood_group":"O+","hostel":"Girls Hostel Block 1","profile_initial":"SP","color":"linear-gradient(135deg,#7c4dff,#ff4d8d)"},{"roll_no":"25FC754","name":"Nikhil Joshi","email":"nikhil.joshi@dpgu.edu.in","phone":"9876543218","department":"Computer Science Engineering","year":"First Year","division":"B","blood_group":"AB-","hostel":"Boys Hostel Block 3","profile_initial":"NJ","color":"linear-gradient(135deg,#ff4d8d,#7c4dff)"},{"roll_no":"25FC755","name":"Kavya Nair","email":"kavya.nair@dpgu.edu.in","phone":"9876543219","department":"Computer Science Engineering","year":"First Year","division":"A","blood_group":"A+","hostel":"Girls Hostel Block 2","profile_initial":"KN","color":"linear-gradient(135deg,#00e5ff,#7c4dff)"}];
+
+loadAll();
+observeReveal();
+</script>
+</body>
+</html>
